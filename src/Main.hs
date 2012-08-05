@@ -8,11 +8,16 @@ class Optimalize a where
   walk :: a -> State StdGen a
   satisfy :: a -> Bool
 
+instance (Optimalize a) => Optimalize [a] where
+  walk as = mapM walk as
+  satisfy as = all satisfy as
+
 instance Optimalize Int where
   walk n = do
     step <- choice [-1, 1]
     return (n + step)
   satisfy n = (n - 50)^2 < 3^2
+
 
 calcurateOptimal :: (Optimalize a) => Int -> State StdGen a -> State StdGen a
 calcurateOptimal max_iterate v0 = do
@@ -20,13 +25,13 @@ calcurateOptimal max_iterate v0 = do
   (return.head.filter satisfy)=<<(sequence as)
 
 optimalResult :: (Optimalize a) => a -> State StdGen a
-optimalResult v0 = calcurateOptimal 100 (return v0)
+optimalResult v0 = calcurateOptimal 10 (return v0)
 
 
-evalOptimize :: IO Int
+evalOptimize :: IO [Int]
 evalOptimize = do
   g <- getStdGen
-  return $ evalState (optimalResult (3 :: Int)) g
+  return $ evalState (optimalResult ([3, 3] :: [Int])) g
 
 main = do
   x <- evalOptimize
