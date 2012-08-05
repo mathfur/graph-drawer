@@ -7,9 +7,17 @@ walk n = do
   step <- choice [-1, 1]
   return (n + step)
 
-f :: StdGen -> Int
-f = fst . runState (walk 3)
+satisfy :: Int -> Bool
+satisfy n = (n - 50)^2 < 3^2
+
+calcurateOptimal :: (a -> State StdGen a) -> (a -> Bool) -> Int -> State StdGen a -> State StdGen a
+calcurateOptimal f p max_iterate v0 = do
+  let as = (iterate (f=<<) v0)
+  (return.head.filter p)=<<(sequence as)
+
+executeWalk :: StdGen -> Int -> Int
+executeWalk g n = fst $ runState (walk n) g
 
 main = do
   g <- getStdGen
-  print $ f g
+  print $ fst $ runState (calcurateOptimal walk satisfy 100 (return 3)) g
