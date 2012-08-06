@@ -3,19 +3,19 @@ module Helpers where
 import System.Random
 import Control.Monad.State
 
-newtype TemperaturedStdGen = TemperaturedStdGen { runTempr :: (Float, StdGen) }
+type TemperaturedStdGen = (Float, StdGen)
 
 choice :: [a] -> State TemperaturedStdGen a
 choice as = do
-  (t, g) <- (get>>=(return.runTempr))
+  (t, g) <- get
   let (index, g') = randomR (0, (length as)-1) g
-  put $ TemperaturedStdGen (t, g')
+  put (t, g')
   return $ as !! index
 
 temperature :: State TemperaturedStdGen Float
-temperature = get>>=(return.fst.runTempr)
+temperature = get>>=(return.fst)
 
 downTemperature :: State TemperaturedStdGen ()
 downTemperature = do
-  (t, g) <- (get>>=(return.runTempr))
-  put $ TemperaturedStdGen (9.5*t, g)
+  (t, g) <- get
+  put (9.5*t, g)

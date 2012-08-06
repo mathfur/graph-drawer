@@ -48,7 +48,7 @@ optimalResult v0 = calcurateOptimal 1 (return v0)
 evalOptimize :: IO [Int]
 evalOptimize = do
   g <- getStdGen
-  return $ evalState (optimalResult ([3, 3] :: [Int])) $ TemperaturedStdGen (100, g)
+  return $ evalState (optimalResult ([3, 3] :: [Int])) (100, g)
 
 main = do
   x <- evalOptimize
