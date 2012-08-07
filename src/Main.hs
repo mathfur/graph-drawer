@@ -36,19 +36,21 @@ o_walk a0 = do
       prob_p :: Float -> Bool
       prob_p t = (0.01 < prob t)
 
-calcurateOptimal :: (Optimalize a) => Int -> State TemperaturedStdGen a -> State TemperaturedStdGen a
-calcurateOptimal max_iterate v0 = do
-  let as = (iterate (walk=<<) v0)
-  (return.head.filter satisfy)=<<(sequence as)
+calcurateOptimal :: (Optimalize a) => Int -> a -> State TemperaturedStdGen [a]
+calcurateOptimal len a0
+  | len == 1 = return [a0]
+  | otherwise = do
+    as <- calcurateOptimal (len-1) a0
+    a  <- walk $ head as
+    return $ a:as
 
-optimalResult :: (Optimalize a) => a -> State TemperaturedStdGen a
-optimalResult v0 = calcurateOptimal 1 (return v0)
-
+optimalResult :: (Optimalize a) => a -> State TemperaturedStdGen [a]
+optimalResult a0 = calcurateOptimal 20 a0
 
 evalOptimize :: IO [Int]
 evalOptimize = do
   g <- getStdGen
-  return $ evalState (optimalResult ([3, 3] :: [Int])) (100, g)
+  return $ evalState (optimalResult (0 :: Int)) (0, g)
 
 main = do
   x <- evalOptimize
