@@ -18,4 +18,13 @@ temperature = get>>=(return.fst)
 downTemperature :: State TemperaturedStdGen ()
 downTemperature = do
   (t, g) <- get
-  put (9.5*t, g)
+  put (0.95*t, g)
+
+prob_p :: State TemperaturedStdGen Bool
+prob_p = do
+  (t, g) <- get
+  let (threshold, g') = randomR (0.0 :: Float, 1.0) g
+  return (threshold < prob t)
+  where
+    prob :: Float -> Float
+    prob t = 1 - (1/(1 + t))
