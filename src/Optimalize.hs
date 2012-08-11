@@ -32,13 +32,6 @@ instance (Optimalize a) => Optimalize [a] where
   walk as = mapM walk as
   cost as = foldr (*) 1 $ map cost as
 
-instance Optimalize Int where
-  walk n = do
-    step <- choice [-1, 1]
-    let n_ = n + step
-    return $ if 0 <= n_ then n_ else 0
-  cost n = ((fromIntegral n)^2 - 300)^2
-
 --------------------------------------------------------------
 -- | functions for Optimalize
 
@@ -78,9 +71,12 @@ evalOptimize len init_val = do
   g <- getStdGen
   return $ evalState (calcurateOptimal len init_val) (1, g)
 
-choice :: (Optimalize a) => [a] -> TprState a
+choice :: [a] -> TprState a
 choice as = do
   (t, g) <- get
   let (index, g') = randomR (0, (length as)-1) g
   put (t, g')
   return $ as !! index
+
+step :: TprState Int
+step = choice [-1, 1]
