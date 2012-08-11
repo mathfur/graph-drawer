@@ -18,6 +18,7 @@ module Optimalize where
 import System.Random
 import Control.Monad.State
 import Debug.Trace
+import Control.Applicative
 
 type TprState = State (Float, StdGen)
 
@@ -25,12 +26,19 @@ class Optimalize a where
   walk :: a -> TprState a
   cost :: a -> Float
 
+class InterCostable a b where
+  interCost :: a -> b -> Float
+
 --------------------------------------------------------------
 -- | Optimalize instances
 
 instance (Optimalize a) => Optimalize [a] where
   walk as = mapM walk as
   cost as = foldr (*) 1 $ map cost as
+
+instance (Optimalize a, Optimalize b, InterCostable a b) =>  Optimalize (a, b) where
+  walk (n, m) = ((,) <$> (walk n) <*> (walk m))
+  cost (n, m) = (cost n) + (cost m) + (interCost n m)
 
 --------------------------------------------------------------
 -- | functions for Optimalize
