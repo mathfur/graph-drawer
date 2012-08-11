@@ -45,12 +45,11 @@ calcurateOptimal len a0
       where
         walkAccordingToTemperature :: (Optimalize a) => a -> TprState a
         walkAccordingToTemperature a0 = do
-          let v0 = return a0
           let v1 = walk a0
           a1 <- v1
           downTemperature
           movable <- highTempIsMovable
-          if ((cost a1 <= cost a0) || movable) then v1 else v0
+          if ((cost a1 <= cost a0) || movable) then (return a1) else (return a0)
             where
               downTemperature :: TprState ()
               downTemperature = do
