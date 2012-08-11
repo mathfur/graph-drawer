@@ -34,7 +34,7 @@ class InterCostable a b where
 
 instance (Optimalize a) => Optimalize [a] where
   walk as = mapM walk as
-  cost as = foldr (*) 1 $ map cost as
+  cost = sum . (map cost)
 
 instance (Optimalize a, Optimalize b, InterCostable a b) =>  Optimalize (a, b) where
   walk (n, m) = ((,) <$> (walk n) <*> (walk m))
