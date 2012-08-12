@@ -10,6 +10,7 @@ import System.Directory
 
 type Point = (Int, Int)  -- => Optimalize
 type Line = (Point, Point) -- => 
+newtype Line_ = Line_ (Point, Point)
 newtype Chain = Chain [Point] deriving Show
 
 --------------------------
@@ -25,6 +26,12 @@ instance InterCostable Int Int where
 --------------------------
 instance InterCostable Point Point where
   interCost p1 p2 = 0
+
+instance Optimalize Line_ where
+  walk (Line_ (p1, p2)) = Line_ <$> ((,) <$> (walk p1) <*> (walk p2))
+  cost (Line_ (p1, p2)) = fromIntegral $ if (distance p1 p2 < 10) then 100 else 0
+    where
+      distance (x1, y1) (x2, y2) = sqrt $ fromIntegral $ ((x2 - x1)^2 + (y2 - y1)^2)
 
 --------------------------
 instance InterCostable Line Line where
@@ -71,7 +78,7 @@ fromChainToLines :: Chain -> [Line]
 fromChainToLines (Chain ps) = adjacents ps
 
 main = do
-  a <- evalOptimize 10000 $ Chain [(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0),(0,0)]
+  a <- evalOptimize 10000 $ Chain $ take 20 $ repeat (0,0)
   home <- getHomeDirectory
   writeFile (home </> "src/tmp/tmp.html") $ showSVG $ fromChainToLines $ head a
   print a
