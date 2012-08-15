@@ -2,12 +2,12 @@
 
 -----------------------------------------------------------------------------
 ---- |
----- Module      :  
----- Copyright   :  
----- License     :  
+---- Module      :
+---- Copyright   :
+---- License     :
 ----
 ---- Maintainer  :
----- Stability   : 
+---- Stability   :
 ---- Portability :
 ----
 ----
