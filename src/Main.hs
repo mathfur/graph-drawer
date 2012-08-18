@@ -26,8 +26,10 @@ fromChainToLines (Chain ps)
 --------------------------
 instance Optimalize Int where
   walk n = do
+    t <- temperature
+    let level = floor $ fromIntegral 5*t
     s <- step
-    return (n+s)
+    return $ n + level*s
   cost n = if 0<=n then 0 else ((fromIntegral n)*100)^2
 
 instance InterCostable Int Int where
@@ -102,9 +104,9 @@ instance (SVGable a) => SVGable [a] where
   toInnerSVG as = intercalate "\n" $ map toInnerSVG as
 
 main = do
-  let chain1 = Chain $ take 6 $ repeat (0,0)
-  let chain2 = Chain $ take 6 $ repeat (100,100)
-  a <- evalOptimize 10000 $ Chains [chain1, chain2]
+  let chain1 = Chain $ take 7 $ repeat (0,0)
+  let chain2 = Chain $ take 7 $ repeat (100,100)
+  a <- evalOptimize 1000 $ Chains [chain1, chain2]
   home <- getHomeDirectory
   writeFile (home </> "src/tmp/tmp.html") $ showSVG $ map fromChainToLines $ (\(Chains cs) -> cs) $ head a
   print a

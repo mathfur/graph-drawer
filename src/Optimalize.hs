@@ -87,3 +87,8 @@ choice as = do
 
 step :: TprState Int
 step = choice [-1, 1]
+
+temperature :: TprState Float
+temperature = do
+  (t, g) <- get
+  return $ t
